@@ -1,10 +1,19 @@
 package grammar;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 import lexical.SNLConstants;
+import lexical.Token;
+import lexical.Util;
+import sun.print.resources.serviceui;
 
 public class Zparse {
+	/**
+	 * LL1分析表
+	 */
 	private int [][]LL1Table;
-	
+	private UtilLL1 ul = new UtilLL1();
 	/**
 	 * 获取LL(1)分析表
 	 * @returnLL(1)分析表
@@ -363,10 +372,104 @@ public class Zparse {
 		LL1Table[NonTerminals.MultOp][SNLConstants.OVER ]=104;
 		
 	}
+	/**
+	 * LL(1)语法分析主函数
+	 */
+	public void parse() {
+		CreatLL1Tabble();
+		Token token;
+		ul.setData("C:/Users/8/eclipse-workspace/SNL/src/tokenlist.txt");
+		ul.push(1, NonTerminals.Program);
+		token=ul.readNextToken();
+		while (!ul.getSymbols().isEmpty()) {
+			if (ul.readStackflag()==0) {
+				if (ul.readStackitem()==token.getLextype()) {
+					ul.pop();
+					token=ul.readNextToken();
+				} else {
+					System.out.println("出现非期望单词错误，错误行数："+token.getLineshow());
+					return;
+				}
+			} else {
+				int pnum=LL1Table[ul.readStackitem()][token.getLextype()];
+				ul.pop();
+				predict(pnum);
+			}
+		}
+		if (token.getLextype()!=SNLConstants.ENDFILE) {
+			System.out.println("出现文件提前结束错误，错误行数："+token.getLineshow());
+			return;
+		} else {
+
+		}
+	}
+	/**
+	 * 根据产生式编号选择一个要执行的函数。若产生式编号为 m，则选择函数 process m ( )。
+	 * @param num 已选择的产生式编号
+	 */
+	public void predict(int num) {
+		if (num<=0||num>104) {	//没有正确的产生式可选，非期望单词错，出错信息写入列表文件
+			return;
+		}
+		Zparse p = new Zparse();
+		Class cl = this.getClass();
+		//通过反射机制调用process方法
+		try {
+			Method m = cl.getMethod("process"+num, null);
+			try {
+				m.invoke(this, null);
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+			}
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		}
+	}
+	/**
+	 * 对于给定的操作符，此函数返回操作符的优先级，乘法运算符 > 加法运算符 > 关系运算符 > 栈底标识 END
+	 * @param op 操作符的词法类型
+	 * @return 返回操作符的优先级,返回值越大所给操作符的优先级越高
+	 */
+	public int priosity(int op) {
+		int pri;
+		if (op==SNLConstants.ENDFILE) {
+			pri=0;
+		} else if (op==SNLConstants.LT||op==SNLConstants.EQ) {	// < =
+			pri=1;
+		} else if (op==SNLConstants.PLUS||op==SNLConstants.MINUS) {	// + -
+			pri=2;
+		}  else if (op==SNLConstants.TIMES||op==SNLConstants.OVER) {	// * /
+			pri=3;
+		} else {
+			pri=-1;
+		}
+		return pri;
+	}
 	
+	public void process1() {
+		ul.push(1, NonTerminals.ProgramBody);
+		ul.push(1, NonTerminals.DeclarePart);
+		ul.push(1, NonTerminals.ProgramHead);
+	}
+	public void process2() {
+		ul.push(1, NonTerminals.ProgramName);
+		ul.push(0, SNLConstants.PROGRAM);
+	}
+	public void process3() {
+		
+	}
+	public void process4() {
+		
+	}
 	public static void main(String[] args) {
 		Zparse a=new Zparse();
-		a.CreatLL1Tabble();
+		/*a.CreatLL1Tabble();
 		//把非0的打印出来
 		for(int i=1;i<69;i++){
 			for(int j=0;j<42;j++) {
@@ -374,8 +477,18 @@ public class Zparse {
 				System.out.print("["+NonTerminals.vntypemap2.get(i)+"]"+"["+SNLConstants.tokentypemap.get(j)+"]="+a.getLL1(i,j)+" ");
 				}
 				System.out.print("\n");
-			}
+			}*/
+		/*UtilLL1 u = new UtilLL1();
+		Token x;
+		u.setData("C:/Users/8/eclipse-workspace/SNL/src/tokenlist.txt");
+		while ((x=a.readNextToken())!=null) {
+			Util.printToken(x);
+		}
+		a.predict(1);
+		a.predict(2);*/
+		a.parse();
 		
+		//u.close();
 	}
 
 
