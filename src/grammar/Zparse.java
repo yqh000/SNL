@@ -3,6 +3,7 @@ package grammar;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import grammar.NonTerminals.NodeKind;
 import lexical.SNLConstants;
 import lexical.Token;
 import lexical.Util;
@@ -14,6 +15,8 @@ public class Zparse {
 	 */
 	private int [][]LL1Table;
 	private UtilLL1 ul = new UtilLL1();
+	private TreeNode prok = new TreeNode();
+	private Token token;
 	/**
 	 * 获取LL(1)分析表
 	 * @returnLL(1)分析表
@@ -375,12 +378,20 @@ public class Zparse {
 	/**
 	 * LL(1)语法分析主函数
 	 */
-	public void parse() {
+	public TreeNode parse() {
+		prok.setNodekind(NodeKind.ProK);
+		prok.setChild(new TreeNode[3]);
+		prok.getChild()[0]=new TreeNode();
+		prok.getChild()[1]=new TreeNode();
+		prok.getChild()[2]=new TreeNode();
+		ul.pushPa(prok.getChild()[2]);
+		ul.pushPa(prok.getChild()[1]);
+		ul.pushPa(prok.getChild()[0]);
 		CreatLL1Tabble();
-		Token token;
 		ul.setData("C:/Users/8/eclipse-workspace/SNL/src/tokenlist.txt");
 		ul.push(1, NonTerminals.Program);
 		token=ul.readNextToken();
+		prok.setLineno(token.getLineshow());
 		while (!ul.getSymbols().isEmpty()) {
 			if (ul.readStackflag()==0) {
 				if (ul.readStackitem()==token.getLextype()) {
@@ -388,7 +399,7 @@ public class Zparse {
 					token=ul.readNextToken();
 				} else {
 					System.out.println("出现非期望单词错误，错误行数："+token.getLineshow());
-					return;
+					return prok;
 				}
 			} else {
 				int pnum=LL1Table[ul.readStackitem()][token.getLextype()];
@@ -398,10 +409,10 @@ public class Zparse {
 		}
 		if (token.getLextype()!=SNLConstants.ENDFILE) {
 			System.out.println("出现文件提前结束错误，错误行数："+token.getLineshow());
-			return;
 		} else {
 
 		}
+		return prok;
 	}
 	/**
 	 * 根据产生式编号选择一个要执行的函数。若产生式编号为 m，则选择函数 process m ( )。
@@ -460,12 +471,50 @@ public class Zparse {
 	public void process2() {
 		ul.push(1, NonTerminals.ProgramName);
 		ul.push(0, SNLConstants.PROGRAM);
+		ul.popPa().setKind(NodeKind.PheadK);
 	}
 	public void process3() {
-		
+		ul.push(0, SNLConstants.ID);
+		TreeNode p = prok.getChild()[0];
+		p.idnumcount();
+		p.getName().add(token.getSem());
 	}
 	public void process4() {
+		ul.push(1, NonTerminals.ProcDecpart);
+		ul.push(1, NonTerminals.VarDecpart);
+		ul.push(1, NonTerminals.TypeDecpart);
+	}
+	public void process5() {
 		
+	}
+	public void process6() {
+		ul.push(1, NonTerminals.TypeDec);
+	}
+	public void process7() {
+		ul.push(1, NonTerminals.TypeDecList);
+		ul.push(0, SNLConstants.TYPE);
+		TreeNode t=ul.popPa();
+		t.setKind(NodeKind.TypeK);
+		t.setChild(new TreeNode[1]);
+		t.getChild()[0]=new TreeNode();
+		t.setSibling(new TreeNode());
+		ul.pushPa(t.getSibling());
+		ul.pushPa(t.getChild()[0]);
+	}
+	public void process8() {
+		ul.push(1, NonTerminals.ProcDecpart);
+		ul.push(1, NonTerminals.VarDecpart);
+		ul.push(1, NonTerminals.TypeDecpart);
+	}
+	public void process9() {
+		ul.push(1, NonTerminals.ProcDecpart);
+		ul.push(1, NonTerminals.VarDecpart);
+		ul.push(1, NonTerminals.TypeDecpart);
+	}
+	public void process10() {
+		ul.push(1, NonTerminals.ProcDecpart);
+		ul.push(1, NonTerminals.VarDecpart);
+		ul.push(1, NonTerminals.TypeDecpart);
 	}
 	public static void main(String[] args) {
 		Zparse a=new Zparse();

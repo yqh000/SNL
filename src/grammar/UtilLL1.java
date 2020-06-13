@@ -17,15 +17,15 @@ public class UtilLL1 {
 	/**
 	 * 语法树栈
 	 */
-	private Stack<Integer> pa;
+	private Stack<TreeNode> pa = new Stack<TreeNode>();
 	/**
 	 * 操作符栈
 	 */
-	private Stack<Integer> op;
+	private Stack<Integer> op = new Stack<Integer>();
 	/**
 	 * 操作数栈
 	 */
-	private Stack<Integer> num;
+	private Stack<Integer> num = new Stack<Integer>();
 	/**
 	 * 文件地址
 	 */
@@ -67,6 +67,20 @@ public class UtilLL1 {
 	 */
 	public Symbols pop() {
 		return symbols.pop();
+	}
+	/**
+	 * 语法树栈压栈
+	 * @param node 语法树节点
+	 */
+	public void pushPa(TreeNode node) {
+		pa.push(node);
+	}
+	/**
+	 * 语法树栈弹栈
+	 * @return 栈顶语法树节点
+	 */
+	public TreeNode popPa() {
+		return pa.pop();
 	}
 	/**
 	 * 读符号栈栈顶标志
