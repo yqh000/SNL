@@ -15,7 +15,7 @@ public class Process {
 		ul.push(0,SNLConstants.INTC);
 		
 	}
-	//是否需要先把nodekind=StmtK，kind才能赋值RecordK？
+	//是否需要先把nodekind=StmtK，kind才能赋值RecordK？,是否需要加上saveP属性？
 	public void process22() {
 		ul.push(0,SNLConstants.END1);
 		ul.push(1,NonTerminals.FieldDecList);
@@ -32,10 +32,10 @@ public class Process {
 		ul.push(0,SNLConstants.SEMI);
 		ul.push(1,NonTerminals.IdList);
 		ul.push(1,NonTerminals.BaseType);
-		TreeNode t=ul.popPa();
+		currentP=ul.popPa();
 		//temp
-		t.setSibling(new TreeNode());
-		ul.pushPa(t.getSibling());			
+		currentP.setSibling(new TreeNode());
+		ul.pushPa(currentP.getSibling());			
 	}
 	//需不需要t.setkind?
 	public void process24() {
@@ -43,13 +43,13 @@ public class Process {
 		ul.push(0,SNLConstants.SEMI);
 		ul.push(1,NonTerminals.IdList);
 		ul.push(1,NonTerminals.ArrayType);
-		TreeNode t=ul.popPa();
-		t.setSibling(new TreeNode());
-		ul.pushPa(t.getSibling());		
+		currentP=ul.popPa();
+		currentP.setSibling(new TreeNode());
+		ul.pushPa(currentP.getSibling());		
 	}
 	//有疑问,回复节点？
 	public void process25() {
-		TreeNode t=ul.popPa();		
+		currentP=ul.popPa();		
 	}
 	public void process26() {
 		ul.push(1,NonTerminals.FieldDecList);		
@@ -58,9 +58,9 @@ public class Process {
 	public void process27() {
 		ul.push(1,NonTerminals.IdMore);
 		ul.push(0,SNLConstants.ID);
-		TreeNode p = prok.getChild()[0];
-		p.idnumcount();
-		p.getName().add(token.getSem());
+		currentP = prok.getChild()[0];
+		currentP.idnumcount();
+		currentP.getName().add(token.getSem());
 	}
 	public void process28() {
 		
@@ -79,13 +79,13 @@ public class Process {
 	public void process32() {
 		ul.push(1,NonTerminals.VarDecList);
 		ul.push(0,SNLConstants.VAR);	
-		TreeNode t=ul.popPa();
-		t.setKind(NodeKind.VarK);
-		t.setChild(new TreeNode[1]);
-		t.getChild()[0]=new TreeNode();
-		t.setSibling(new TreeNode());
-		ul.pushPa(t.getSibling());
-		ul.pushPa(t.getChild()[0]);		
+		currentP=ul.popPa();
+		currentP.setKind(NodeKind.VarK);
+		currentP.setChild(new TreeNode[1]);
+		currentP.getChild()[0]=new TreeNode();
+		currentP.setSibling(new TreeNode());
+		ul.pushPa(currentP.getSibling());
+		ul.pushPa(currentP.getChild()[0]);		
 	}
 	//需不需要t.setkind?
 	public void process33() {
@@ -93,9 +93,9 @@ public class Process {
 		ul.push(0,SNLConstants.SEMI);
 		ul.push(1,NonTerminals.VarIdList);
 		ul.push(1,NonTerminals.TypeDef);
-		TreeNode t=ul.popPa();
-		t.setSibling(new TreeNode());
-		ul.pushPa(t.getSibling());
+		currentP=ul.popPa();
+		currentP.setSibling(new TreeNode());
+		ul.pushPa(currentP.getSibling());
 	}
 	//未完成，弹出栈中指向下一个变量声明的指针?
 	public void process34() {
@@ -109,9 +109,9 @@ public class Process {
 	public void process36() {
 		ul.push(1,NonTerminals.VarIdMore);
 		ul.push(0,SNLConstants.ID);
-		TreeNode p = prok.getChild()[0];
-		p.idnumcount();
-		p.getName().add(token.getSem());
+		currentP = prok.getChild()[0];
+		currentP.idnumcount();
+		currentP.getName().add(token.getSem());
 	}
 	public void process37() {
 	
