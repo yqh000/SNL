@@ -58,9 +58,9 @@ public class Process {
 	public void process27() {
 		ul.push(1,NonTerminals.IdMore);
 		ul.push(0,SNLConstants.ID);
-		currentP = prok.getChild()[0];
-		currentP.idnumcount();
-		currentP.getName().add(token.getSem());
+		TreeNode p  = prok.getChild()[0];
+		p.idnumcount();
+		p.getName().add(token.getSem());
 	}
 	public void process28() {
 		
@@ -109,9 +109,9 @@ public class Process {
 	public void process36() {
 		ul.push(1,NonTerminals.VarIdMore);
 		ul.push(0,SNLConstants.ID);
-		currentP = prok.getChild()[0];
-		currentP.idnumcount();
-		currentP.getName().add(token.getSem());
+		TreeNode p  = prok.getChild()[0];
+		p.idnumcount();
+		p.getName().add(token.getSem());
 	}
 	public void process37() {
 	
