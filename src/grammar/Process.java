@@ -8,6 +8,7 @@ public class Process {
 	private int [][]LL1Table;
 	private UtilLL1 ul = new UtilLL1();
 	private TreeNode prok = new TreeNode();
+	private TreeNode currentP = new TreeNode();
 	private Token token;
 	//未完成
 	public void process21() {

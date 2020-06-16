@@ -16,6 +16,7 @@ public class Zparse {
 	private int [][]LL1Table;
 	private UtilLL1 ul = new UtilLL1();
 	private TreeNode prok = new TreeNode();
+	private TreeNode currentP = new TreeNode();
 	private Token token;
 	/**
 	 * 获取LL(1)分析表
@@ -493,28 +494,30 @@ public class Zparse {
 	public void process7() {
 		ul.push(1, NonTerminals.TypeDecList);
 		ul.push(0, SNLConstants.TYPE);
-		TreeNode t=ul.popPa();
-		t.setKind(NodeKind.TypeK);
-		t.setChild(new TreeNode[1]);
-		t.getChild()[0]=new TreeNode();
-		t.setSibling(new TreeNode());
-		ul.pushPa(t.getSibling());
-		ul.pushPa(t.getChild()[0]);
+		currentP=ul.popPa();
+		currentP.setKind(NodeKind.TypeK);
+		currentP.setChild(new TreeNode[1]);
+		currentP.getChild()[0]=new TreeNode();
+		currentP.setSibling(new TreeNode());
+		ul.pushPa(currentP.getSibling());
+		ul.pushPa(currentP.getChild()[0]);
 	}
 	public void process8() {
-		ul.push(1, NonTerminals.ProcDecpart);
-		ul.push(1, NonTerminals.VarDecpart);
-		ul.push(1, NonTerminals.TypeDecpart);
+		ul.push(1, NonTerminals.TypeDecMore);
+		ul.push(0, SNLConstants.SEMI);
+		ul.push(1, NonTerminals.TypeDef);
+		ul.push(0, SNLConstants.EQ);
+		ul.push(1, NonTerminals.TypeId);
+		currentP=ul.popPa();
+		currentP.setKind(NodeKind.TypeK);
+		currentP.setSibling(new TreeNode());
+		ul.pushPa(currentP.getSibling());
 	}
 	public void process9() {
-		ul.push(1, NonTerminals.ProcDecpart);
-		ul.push(1, NonTerminals.VarDecpart);
-		ul.push(1, NonTerminals.TypeDecpart);
+		ul.popPa();
 	}
 	public void process10() {
-		ul.push(1, NonTerminals.ProcDecpart);
-		ul.push(1, NonTerminals.VarDecpart);
-		ul.push(1, NonTerminals.TypeDecpart);
+		ul.push(1, NonTerminals.TypeDecList);
 	}
 	public static void main(String[] args) {
 		Zparse a=new Zparse();
