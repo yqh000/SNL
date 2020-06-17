@@ -151,7 +151,7 @@ public class TreeNode {
 class ArrayAttr {
 	private int low;
 	private int up;
-	private Class childTypeClass;
+	private NodeKind childTypeClass;
 	
 	public int getLow() {
 		return low;
@@ -165,10 +165,10 @@ class ArrayAttr {
 	public void setUp(int up) {
 		this.up = up;
 	}
-	public Class getChildTypeClass() {
+	public NodeKind getChildTypeClass() {
 		return childTypeClass;
 	}
-	public void setChildTypeClass(Class childTypeClass) {
+	public void setChildTypeClass(NodeKind childTypeClass) {
 		this.childTypeClass = childTypeClass;
 	}
 }
