@@ -3,7 +3,10 @@ package grammar;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import com.sun.org.apache.bcel.internal.generic.ATHROW;
+
 import grammar.NonTerminals.NodeKind;
+import grammar.NonTerminals.ParamType;
 import lexical.SNLConstants;
 import lexical.Token;
 import lexical.Util;
@@ -19,6 +22,12 @@ public class Zparse {
 	private TreeNode currentP = new TreeNode();
 	private TreeNode saveP;
 	private Token token;
+	private Boolean getExpResult = false;
+	private Boolean getExpResult2 = false;
+	/**
+	 * 未配对的左括号数量
+	 */
+	private int expflag=0;
 
 	/**
 	 * 获取LL(1)分析表
@@ -506,7 +515,7 @@ public class Zparse {
 		ul.push(1, NonTerminals.TypeDecList);
 		ul.push(0, SNLConstants.TYPE);
 		currentP = ul.popPa();
-		currentP.setKind(NodeKind.TypeK);
+		currentP.setNodekind(NodeKind.TypeK);
 		currentP.setChild(new TreeNode[1]);
 		currentP.getChild()[0] = new TreeNode();
 		currentP.setSibling(new TreeNode());
@@ -521,7 +530,7 @@ public class Zparse {
 		ul.push(0, SNLConstants.EQ);
 		ul.push(1, NonTerminals.TypeId);
 		currentP = ul.popPa();
-		currentP.setKind(NodeKind.DecK);
+		currentP.setNodekind(NodeKind.DecK);
 		currentP.setSibling(new TreeNode());
 		ul.pushPa(currentP.getSibling());
 	}
@@ -666,12 +675,11 @@ public class Zparse {
 		ul.push(1, NonTerminals.VarDec);
 	}
 
-	// 是否和process7一样？
 	public void process32() {
 		ul.push(1, NonTerminals.VarDecList);
 		ul.push(0, SNLConstants.VAR);
 		currentP = ul.popPa();
-		currentP.setKind(NodeKind.VarK);
+		currentP.setNodekind(NodeKind.VarK);
 		currentP.setChild(new TreeNode[1]);
 		currentP.getChild()[0] = new TreeNode();
 		currentP.setSibling(new TreeNode());
@@ -685,6 +693,8 @@ public class Zparse {
 		ul.push(1, NonTerminals.VarIdList);
 		ul.push(1, NonTerminals.TypeDef);
 		currentP = ul.popPa();
+		currentP.setNodekind(NodeKind.DecK);
+		currentP.setSibling(new TreeNode());
 		ul.pushPa(currentP.getSibling());
 	}
 
@@ -700,7 +710,6 @@ public class Zparse {
 	public void process36() {
 		ul.push(1, NonTerminals.VarIdMore);
 		ul.push(0, SNLConstants.ID);
-		currentP = prok.getChild()[0];
 		currentP.idnumcount();
 		currentP.getName().add(token.getSem());
 	}
@@ -713,16 +722,507 @@ public class Zparse {
 		ul.push(1, NonTerminals.VarIdList);
 		ul.push(0, SNLConstants.COMMA);
 	}
-
+	
 	public void process39() {
 
 	}
 
 	public void process40() {
-		ul.push(1, NonTerminals.ProcDeclaration);
+		ul.push(1, NonTerminals.ProcDec);
 
 	}
 
+	public void process41() {
+		ul.push(1, NonTerminals.ProcDecMore);
+		ul.push(1, NonTerminals.ProcBody);
+		ul.push(1, NonTerminals.ProcDecPart);
+		ul.push(0, SNLConstants.SEMI);
+		ul.push(0, SNLConstants.RPAREN);
+		ul.push(1, NonTerminals.ParamList);
+		ul.push(0, SNLConstants.LPAREN);
+		ul.push(1, NonTerminals.ProcName);
+		ul.push(0, SNLConstants.PROCEDURE);
+		currentP=ul.popPa();
+		currentP.setNodekind(NodeKind.ProK);
+		currentP.setChild(new TreeNode[3]);
+		currentP.getChild()[0] = new TreeNode();
+		currentP.getChild()[1] = new TreeNode();
+		currentP.getChild()[2] = new TreeNode();
+		currentP.setSibling(new TreeNode());
+		ul.pushPa(currentP.getSibling());
+		ul.pushPa(currentP.getChild()[2]);
+		ul.pushPa(currentP.getChild()[1]);
+		ul.pushPa(currentP.getChild()[0]);
+	}
+
+	public void process42() {
+		
+	}
+
+	public void process43() {
+		ul.push(1, NonTerminals.ProcDeclaration);
+	}
+
+	public void process44() {
+		ul.push(0, SNLConstants.ID);
+		currentP.idnumcount();
+		currentP.getName().add(token.getSem());
+	}
+
+	public void process45() {
+		ul.popPa();
+	}
+	
+	public void process46() {
+		ul.push(1, NonTerminals.ParamDecList);
+	}
+
+	public void process47() {
+		ul.push(1, NonTerminals.ParamMore);
+		ul.push(1, NonTerminals.Param);
+	}
+
+	public void process48() {
+		ul.popPa();
+		saveP=currentP;
+	}
+
+	public void process49() {
+		ul.push(1, NonTerminals.ParamDecList);
+		ul.push(0, SNLConstants.SEMI);
+	}
+
+	public void process50() {
+		ul.push(1, NonTerminals.FormList);
+		ul.push(1, NonTerminals.TypeDef);
+		currentP=ul.popPa();
+		currentP.setNodekind(NodeKind.ProcDecK);
+		currentP.setProcAttr(new ProcAttr());
+		currentP.getProcAttr().setParamt(ParamType.valparamtype);
+		currentP.setSibling(new TreeNode());
+		ul.pushPa(currentP.getSibling());
+	}
+
+	public void process51() {
+		ul.push(1, NonTerminals.FormList);
+		ul.push(1, NonTerminals.TypeDef);
+		ul.push(0, SNLConstants.VAR);
+		currentP=ul.popPa();
+		currentP.setNodekind(NodeKind.ProcDecK);
+		currentP.setProcAttr(new ProcAttr());
+		currentP.getProcAttr().setParamt(ParamType.varparamtype);
+		currentP.setSibling(new TreeNode());
+		ul.pushPa(currentP.getSibling());
+	}
+
+	public void process52() {
+		ul.push(1, NonTerminals.FidMore);
+		ul.push(0, SNLConstants.ID);
+		currentP.idnumcount();
+		currentP.getName().add(token.getSem());
+	}
+	
+	public void process53() {
+		
+	}
+
+	public void process54() {
+		ul.push(1, NonTerminals.FormList);
+		ul.push(0, SNLConstants.COMMA);
+	}
+
+	public void process55() {
+		ul.push(1, NonTerminals.DeclarePart);
+	}
+
+	public void process56() {
+		ul.push(1, NonTerminals.ProgramBody);
+	}
+	
+	public void process57() {
+		ul.push(0, SNLConstants.END1);
+		ul.push(1, NonTerminals.StmList);
+		ul.push(0, SNLConstants.BEGIN1);
+		ul.popPa();
+		currentP=ul.popPa();
+		currentP.setNodekind(NodeKind.StmLK);
+		currentP.setChild(new TreeNode[1]);
+		currentP.getChild()[0] = new TreeNode();
+		ul.pushPa(currentP.getChild()[0]);
+	}
+
+	public void process58() {
+		ul.push(1, NonTerminals.StmMore);
+		ul.push(1, NonTerminals.Stm);
+	}
+
+	public void process59() {
+		ul.popPa();
+	}
+
+	public void process60() {
+		ul.push(1, NonTerminals.StmList);
+		ul.push(0, SNLConstants.SEMI);
+	}
+
+	public void process61() {
+		ul.push(1, NonTerminals.ConditionalStm);
+		currentP=ul.popPa();
+		currentP.setNodekind(NodeKind.StmtK);
+		currentP.setKind(NodeKind.IfK);
+		currentP.setSibling(new TreeNode());
+		ul.pushPa(currentP.getSibling());
+	}
+
+	public void process62() {
+		ul.push(1, NonTerminals.LoopStm);
+		currentP=ul.popPa();
+		currentP.setNodekind(NodeKind.StmtK);
+		currentP.setKind(NodeKind.WhileK);
+		currentP.setSibling(new TreeNode());
+		ul.pushPa(currentP.getSibling());
+	}
+
+	public void process63() {
+		ul.push(1, NonTerminals.InputStm);
+		currentP=ul.popPa();
+		currentP.setNodekind(NodeKind.StmtK);
+		currentP.setKind(NodeKind.ReadK);
+		currentP.setSibling(new TreeNode());
+		ul.pushPa(currentP.getSibling());
+	}
+
+	public void process64() {
+		ul.push(1, NonTerminals.OutputStm);
+		currentP=ul.popPa();
+		currentP.setNodekind(NodeKind.StmtK);
+		currentP.setKind(NodeKind.WriteK);
+		currentP.setSibling(new TreeNode());
+		ul.pushPa(currentP.getSibling());
+	}
+
+	public void process65() {
+		ul.push(1, NonTerminals.ReturnStm);
+		currentP=ul.popPa();
+		currentP.setNodekind(NodeKind.StmtK);
+		currentP.setKind(NodeKind.ReturnK);
+		currentP.setSibling(new TreeNode());
+		ul.pushPa(currentP.getSibling());
+	}
+	
+	public void process66() {
+		ul.push(1, NonTerminals.AssCall);
+		ul.push(0, SNLConstants.ID);
+		currentP=ul.popPa();
+		currentP.setNodekind(NodeKind.StmtK);
+		currentP.setChild(new TreeNode[1]);
+		currentP.getChild()[0]=new TreeNode(NodeKind.ExpK);
+		ul.pushPa(currentP.getSibling());
+	}
+
+	public void process67() {
+		ul.push(1, NonTerminals.AssignmentRest);
+		currentP.setKind(NodeKind.AssignK);
+	}
+
+	public void process68() {
+		ul.push(1, NonTerminals.CallStmRest);
+		currentP.setKind(NodeKind.CallK);
+		currentP.getChild()[0].setKind(NodeKind.IdK);
+	}
+
+	public void process69() {
+		ul.push(1, NonTerminals.Exp);
+		ul.push(0, SNLConstants.ASSIGN);
+		ul.push(1, NonTerminals.VariMore);
+		ul.pushPa(currentP.getChild()[0]);
+		//ul.pushOp(new ExpAttr(-1));//?
+	}
+
+	public void process70() {
+		ul.push(0, SNLConstants.FI);
+		ul.push(1, NonTerminals.StmList);
+		ul.push(0, SNLConstants.ELSE);
+		ul.push(1, NonTerminals.StmList);
+		ul.push(0, SNLConstants.THEN);
+		ul.push(1, NonTerminals.RelExp);
+		ul.push(0, SNLConstants.IF);
+		ul.pushPa(currentP.getChild()[2]);
+		ul.pushPa(currentP.getChild()[1]);
+		ul.pushPa(currentP.getChild()[0]);
+	}
+
+	public void process71() {
+		ul.push(0, SNLConstants.ENDWH);
+		ul.push(1, NonTerminals.StmList);
+		ul.push(0, SNLConstants.DO);
+		ul.push(1, NonTerminals.RelExp);
+		ul.push(0, SNLConstants.WHILE);
+		ul.pushPa(currentP.getChild()[1]);
+		ul.pushPa(currentP.getChild()[0]);
+	}
+
+	public void process72() {
+		ul.push(0, SNLConstants.RPAREN);
+		ul.push(1, NonTerminals.Invar);
+		ul.push(0, SNLConstants.LPAREN);
+		ul.push(0, SNLConstants.READ);
+	}
+
+	public void process73() {
+		ul.push(0, SNLConstants.ID);
+		currentP.idnumcount();
+		currentP.getName().add(token.getSem());
+	}
+
+	public void process74() {
+		ul.push(0, SNLConstants.RPAREN);
+		ul.push(1, NonTerminals.Exp);
+		ul.push(0, SNLConstants.LPAREN);
+		ul.push(0, SNLConstants.READ);
+		TreeNode t = new TreeNode(NodeKind.ExpK);
+		t.getExpAttr().setOp(-1);
+		ul.pushOp(t);
+	}
+
+	public void process75() {
+		ul.push(0, SNLConstants.RETURN1);
+	}
+	
+	public void process76() {
+		ul.push(0, SNLConstants.RPAREN);
+		ul.push(1, NonTerminals.ActParamList);
+		ul.push(0, SNLConstants.LPAREN);
+		ul.pushPa(currentP.getChild()[0]);
+	}
+
+	public void process77() {
+		ul.popPa();
+	}
+
+	public void process78() {
+		ul.push(1, NonTerminals.ActParamMore);
+		ul.push(1, NonTerminals.Exp);
+		TreeNode t = new TreeNode(NodeKind.ExpK);
+		t.getExpAttr().setOp(-1);
+		ul.pushOp(t);
+	}
+
+	public void process79() {
+		
+	}
+
+	public void process80() {
+		ul.push(1, NonTerminals.ActParamList);
+		ul.push(0, SNLConstants.COMMA);
+		ul.pushPa(currentP.getSibling());
+	}
+
+	public void process81() {
+		ul.push(1, NonTerminals.OtherRelE);
+		ul.push(1, NonTerminals.Exp);
+		TreeNode t = new TreeNode(NodeKind.ExpK);
+		t.getExpAttr().setOp(-1);
+		ul.pushOp(t);
+		getExpResult=false;
+	}
+
+	public void process82() {
+		ul.push(1, NonTerminals.Exp);
+		ul.push(1, NonTerminals.CmpOp);
+		currentP = new TreeNode(NodeKind.ExpK);
+		currentP.setKind(NodeKind.OpK);
+		currentP.getExpAttr().setOp(token.getLextype());
+		while (!(priosity(ul.readOpStack().getExpAttr().getOp())>=priosity(token.getLextype()))) {
+			TreeNode t =ul.popOp();
+			t.setChild(new TreeNode [2]);
+			t.getChild()[1]=ul.popNum();
+			t.getChild()[0]=ul.popNum();
+			ul.pushNum(t);
+		}
+		ul.pushOp(currentP);
+		getExpResult=true;
+	}
+
+	public void process83() {
+		ul.push(1, NonTerminals.OtherTerm);
+		ul.push(1, NonTerminals.Term);
+	}
+
+	public void process84() {
+		if (token.getLextype()==SNLConstants.RPAREN&&expflag==0) {
+			while (ul.readOpStack().getExpAttr().getOp()!=SNLConstants.LPAREN) {
+				TreeNode t=ul.popOp();
+				t.setChild(new TreeNode [2]);
+				t.getChild()[1]=ul.popNum();
+				t.getChild()[0]=ul.popNum();
+				ul.pushNum(t);
+			}
+			ul.popOp();
+			expflag--;
+		} else {
+			if (getExpResult||getExpResult2) {
+				while (ul.readOpStack().getExpAttr().getOp()!=-1) {
+					TreeNode t=ul.popOp();
+					t.setChild(new TreeNode [2]);
+					t.getChild()[1]=ul.popNum();
+					t.getChild()[0]=ul.popNum();
+					ul.pushNum(t);
+				}
+				ul.popOp();
+				currentP=ul.popNum();
+				ul.popPa().set(currentP);
+				getExpResult2=false;
+			}
+		}
+	}
+
+	public void process85() {
+		ul.push(1, NonTerminals.Exp);
+		ul.push(1, NonTerminals.AddOp);
+		currentP = new TreeNode(NodeKind.ExpK);
+		currentP.setKind(NodeKind.OpK);
+		currentP.getExpAttr().setOp(token.getLextype());
+		while (!(priosity(ul.readOpStack().getExpAttr().getOp())>=priosity(token.getLextype()))) {
+			TreeNode t =ul.popOp();
+			t.setChild(new TreeNode [2]);
+			t.getChild()[1]=ul.popNum();
+			t.getChild()[0]=ul.popNum();
+			ul.pushNum(t);
+		}
+		ul.pushOp(currentP);
+		getExpResult=true;
+	}
+
+	public void process86() {
+		ul.push(1, NonTerminals.Factor);
+		ul.push(1, NonTerminals.OtherFactor);
+	}
+
+	public void process87() {
+		
+	}
+
+	public void process88() {
+		ul.push(1, NonTerminals.Term);
+		ul.push(1, NonTerminals.MultOp);
+		currentP = new TreeNode(NodeKind.ExpK);
+		currentP.setKind(NodeKind.OpK);
+		currentP.getExpAttr().setOp(token.getLextype());
+		while (!(priosity(ul.readOpStack().getExpAttr().getOp())>=priosity(token.getLextype()))) {
+			TreeNode t =ul.popOp();
+			t.setChild(new TreeNode [2]);
+			t.getChild()[1]=ul.popNum();
+			t.getChild()[0]=ul.popNum();
+			ul.pushNum(t);
+		}
+		ul.pushOp(currentP);
+		getExpResult=true;
+	}
+
+	public void process89() {
+		ul.push(0, SNLConstants.RPAREN);
+		ul.push(1, NonTerminals.Exp);
+		ul.push(0, SNLConstants.LPAREN);
+		currentP = new TreeNode(NodeKind.ExpK);
+		currentP.setKind(NodeKind.OpK);
+		currentP.getExpAttr().setOp(SNLConstants.LPAREN);
+		ul.pushOp(currentP);
+		expflag++;
+	}
+	
+	public void process90() {
+		ul.push(0, SNLConstants.INTC);
+		currentP = new TreeNode(NodeKind.ExpK);
+		currentP.setKind(NodeKind.ConstK);
+		currentP.getExpAttr().setVal(Integer.parseInt(token.getSem()));
+		ul.pushNum(currentP);
+	}
+
+	public void process91() {
+		ul.push(1, NonTerminals.Variable);
+	}
+
+	public void process92() {
+		ul.push(1, NonTerminals.VariMore);
+		ul.push(0, SNLConstants.ID);
+		currentP = new TreeNode(NodeKind.ExpK);
+		currentP.idnumcount();
+		currentP.getName().add(token.getSem());
+		ul.pushNum(currentP);
+	}
+
+	public void process93() {
+		currentP.setKind(NodeKind.IdK);
+	}
+
+	public void process94() {
+		ul.push(0, SNLConstants.RMIDPAREN);
+		ul.push(1, NonTerminals.Exp);
+		ul.push(0, SNLConstants.LMIDPAREN);
+		currentP.setKind(NodeKind.ArrayK);
+		currentP.setChild(new TreeNode[1]);
+		ul.pushPa(currentP.getChild()[0]);
+		TreeNode t = new TreeNode(NodeKind.ExpK);
+		t.getExpAttr().setOp(-1);
+		ul.pushOp(t);
+		getExpResult2=true;
+	}
+
+	public void process95() {
+		ul.push(1, NonTerminals.FieldVar);
+		ul.push(0, SNLConstants.DOT);
+		currentP.setKind(NodeKind.RecordK);
+		currentP.setChild(new TreeNode[1]);
+		ul.pushPa(currentP.getChild()[0]);
+	}
+	
+	public void process96() {
+		currentP.getName().add(token.getSem());
+		currentP.idnumcount();
+		currentP=ul.popPa();
+	}
+
+	public void process97() {
+		currentP.setKind(NodeKind.IdK);
+	}
+
+	public void process98() {
+		ul.push(0, SNLConstants.RMIDPAREN);
+		ul.push(1, NonTerminals.Exp);
+		ul.push(0, SNLConstants.LMIDPAREN);
+		currentP.setKind(NodeKind.ArrayK);
+		currentP.setChild(new TreeNode[1]);
+		ul.pushPa(currentP.getChild()[0]);
+		TreeNode t = new TreeNode(NodeKind.ExpK);
+		t.getExpAttr().setOp(-1);
+		ul.pushOp(t);
+		getExpResult2=true;
+	}
+
+	public void process99() {
+		ul.push(0, SNLConstants.LT);
+	}
+
+	public void process100() {
+		ul.push(0, SNLConstants.EQ);
+	}
+
+	public void process101() {
+		ul.push(0, SNLConstants.PLUS);
+	}
+
+	public void process102() {
+		ul.push(0, SNLConstants.MINUS);
+	}
+
+	public void process103() {
+		ul.push(0, SNLConstants.TIMES);
+	}
+
+	public void process104() {
+		ul.push(0, SNLConstants.OVER);
+	}
 	public static void main(String[] args) {
 		Zparse a = new Zparse();
 		/*

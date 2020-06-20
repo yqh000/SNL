@@ -140,7 +140,7 @@ public class Scanner {
 				while (ch=='\r'||ch=='\n'||ch==' ') 
 					ch = getNextChar();
 				if (ch==-1||ch=='+'||ch=='-'||ch=='*'||ch=='/'||ch=='('||ch==')'||ch==';'
-						||ch=='['||ch==']'||ch=='='||ch=='<') {
+						||ch=='['||ch==']'||ch=='='||ch=='<'||ch==',') {
 					state=State.DONE;
 				}
 				else if (ch>='a'&&ch<='z') {
@@ -264,6 +264,9 @@ public class Scanner {
 					break;
 				case '<':
 					tl.add(new Token(rowcount,SNLConstants.LT,null));
+					break;
+				case ',':
+					tl.add(new Token(rowcount,SNLConstants.COMMA,null));
 					break;
 				case -1:
 					tl.add(new Token(rowcount,SNLConstants.ENDFILE,null));

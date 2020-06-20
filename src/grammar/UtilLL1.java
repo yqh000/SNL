@@ -21,11 +21,11 @@ public class UtilLL1 {
 	/**
 	 * 操作符栈
 	 */
-	private Stack<Integer> op = new Stack<Integer>();
+	private Stack<TreeNode> op = new Stack<TreeNode>();
 	/**
 	 * 操作数栈
 	 */
-	private Stack<Integer> num = new Stack<Integer>();
+	private Stack<TreeNode> num = new Stack<TreeNode>();
 	/**
 	 * 文件地址
 	 */
@@ -100,35 +100,35 @@ public class UtilLL1 {
 	 * 操作符栈压栈
 	 * @param item 操作符
 	 */
-	public void pushOp(int item) {
-		op.push(new Integer(item));
+	public void pushOp(TreeNode item) {
+		op.push(item);
 	}
 	/**
 	 * 操作符栈弹栈
 	 * @return 栈顶操作符
 	 */
-	public int popOp() {
+	public TreeNode popOp() {
 		return op.pop();
 	}
 	/**
 	 * 
 	 * @return
 	 */
-	public int readOpStack() {
+	public TreeNode readOpStack() {
 		return op.peek();
 	}
 	/**
 	 * 操作数栈压栈
 	 * @param item 操作数
 	 */
-	public void pushNum(int item) {
-		num.push(new Integer(item));
+	public void pushNum(TreeNode item) {
+		num.push(item);
 	}
 	/**
 	 * 操作数栈弹栈
 	 * @return 栈顶操作数
 	 */
-	public int popNum() {
+	public TreeNode popNum() {
 		return num.pop();
 	}
 	/**

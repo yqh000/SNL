@@ -4,8 +4,10 @@ package grammar;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import grammar.NonTerminals.NodeKind;
+import grammar.NonTerminals.ParamType;
 import grammar.NonTerminals.Var;
 /**
  * 
@@ -52,21 +54,35 @@ public class TreeNode {
 	/**
 	 * 记录数组类型的属性
 	 */
-	private ArrayAttr arrayAttr;
+	private ArrayAttr arrayAttr = new ArrayAttr();
 	/**
 	 * 记录过程的属性
 	 */
-	private ProcAttr procAttr;
+	private ProcAttr procAttr = new ProcAttr();
 	/**
 	 * 记录表达式的属性
 	 */
-	private ExpAttr expAttr;
+	private ExpAttr expAttr = new ExpAttr();
 	
 	public TreeNode() {
 		
 	}
 	public TreeNode(NodeKind n) {
 		this.nodekind=n;
+	}
+	public void set(TreeNode t) {
+		this.child=t.child;
+		this.sibling = t.sibling;
+		this.lineno = t.lineno;
+		this.nodekind = t.nodekind;
+		this.kind = t.kind;
+		this.idnum = t.idnum;
+		this.name = t.name;
+		this.table = t.table;
+		this.type_name = t.type_name;
+		this.arrayAttr = t.arrayAttr;
+		this.procAttr = t.procAttr;
+		this.expAttr = t.expAttr;
 	}
 	public TreeNode[] getChild() {
 		return child;
@@ -174,13 +190,13 @@ class ArrayAttr {
 }
 
 class ProcAttr {
-	private int paramt;
+	private ParamType paramt;
 
-	public int getParamt() {
+	public ParamType getParamt() {
 		return paramt;
 	}
 
-	public void setParamt(int paramt) {
+	public void setParamt(ParamType paramt) {
 		this.paramt = paramt;
 	}
 	
@@ -192,6 +208,12 @@ class ExpAttr {
 	private Var varkind;
 	private Class type;
 	
+	public ExpAttr() {
+		
+	}
+public ExpAttr(int op) {
+		this.op=op;
+	}
 	public int getOp() {
 		return op;
 	}
